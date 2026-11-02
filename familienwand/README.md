@@ -7,6 +7,7 @@ als **App auf Android und iPhone** und als **Family Wall** auf alten Tablets.
 - 🖼️ **Tablet:** `/wall` öffnen → Uhr, Wetter, „Heute“-Liste und 7-Tage-Wochenplan mit Farben pro Person. Aktualisiert sich sofort, wenn jemand am Handy etwas einträgt.
 - 🔄 **Google Kalender:** Lesen und Schreiben (zwei Richtungen). Dazu iCal-Abos (Kita, Schule, Müllabfuhr, Feiertage) zum Mitlesen.
 - 🔔 **Erinnerungen** aufs Handy über die App *ntfy* – plus Morgen-Übersicht „Heute: 3 Termine“.
+- ✨ **Tagesfluss** (`/fluss`): persönlicher ADHS-Tagesbegleiter mit Spiel-Elementen – eine Sache zur Zeit, sichtbare Zeit, immer genug Puffer, für jeden Schritt eine Belohnung.
 - 🧒 **Fürs Kind vorbereitet:** eigene Farbe und Emoji, eigene Spalte in der Legende, eigener Kalender möglich.
 - 🔒 Familien-Passwort, Daten bleiben bei euch. Keine Cloud, kein Abo, keine npm-Abhängigkeiten.
 
@@ -115,6 +116,39 @@ Wer ntfy selbst hosten möchte: Server-Adresse in den Einstellungen ändern.
 
 > Das Thema ist wie ein geheimer Kanalname: Wer es kennt, kann mitlesen. Deshalb ist es zufällig und lang.
 
+## 6. Tagesfluss – der ADHS-Tagesbegleiter
+
+Auf dem eigenen Handy `…/fluss` öffnen → Person wählen → *Zum Home-Bildschirm* (eigenes orangenes App-Symbol „Tagesfluss“).
+In der Familien-Ansicht führt das ✨ oben rechts dorthin.
+
+**Jetzt** – nur eine Sache groß auf dem Bildschirm:
+- Ring-Timer, der kleiner wird („20 Min · noch bis 19:20 Uhr“) – Zeit sehen statt rechnen.
+- **Puffer bis zum nächsten echten Termin** aus dem Familienkalender: „Bis 📅 Elterngespräch um 21:30 – 1 Std 59 Min Luft 😌“. Grün = entspannt, gelb = knapp, orange = zu voll (nie rot).
+- **Fertig!** → Konfetti, Sound, Vibration, fliegende Münzen, ein Sticker wird aufgedeckt – und der nächste Block startet automatisch (Schwung mitnehmen).
+- **＋10 Min**, **✂️ Kleiner machen** (halbiert den Block mit Mini-Pause dazwischen), **Später**, **Auf morgen** – ohne Schuldgefühl, der Tag rechnet sich sofort neu.
+- **Energie-Check-in** (aus momo): bei „wenig“ schlägt der sanfte Modus kleine Erfolge ≤ 15 Min vor.
+- Sanfte Hinweise 10 Minuten vor Blockende und vor Terminen – in der App und per ntfy aufs Handy.
+
+**Mein Tag** – der Tag als Level-Karte: erledigte Stationen grün, die aktuelle pulsiert, Termine aus dem Kalender sind „Felsen“, grüne Lücken zeigen Luft.
+Ein Tipp auf *Morgenroutine*, *Mittags-Reset* oder *Abendroutine* plant mehrere Blöcke auf einmal. Eigene Blöcke mit fester Startzeit oder **rückwärts geplant** („fertig sein um 18:30“ → Kochen startet 17:45). *Morgen planen* für den nächsten Tag.
+
+**Album** – Sticker-Sets nach Jahreszeit (je 12), Seltenheiten *Normal / Glänzend / Glitzer*, Set komplett = +100 Münzen. 20 Erfolge in vier Seltenheiten, drei davon geheim.
+
+**Abend** – Tag bewusst abschließen und Truhe öffnen (Bonus-Münzen + Glitzer-Sticker + ein liebevoller Satz), Rückblick nur auf das, was geklappt hat, selbst gewählte **Belohnungen** gegen Münzen eintauschen, Einstellungen (Feierabend-Zeit, Auto-Start, ntfy-Thema, Guten-Morgen-Gruß).
+
+**Spielregeln** (aus [momo](https://github.com/jp1337/momo), MIT):
+| | |
+|---|---|
+| Block geschafft | 10 Münzen (Pause 6) · Combo ab 2 Blöcken ×1,5, ab 3 ×2 · 3+ Min früher fertig +5 |
+| 3× verschoben, dann geschafft | doppelte Münzen („Endlich erledigt!“) |
+| Sterne pro Tag | ⭐ ab 1 Block, ⭐⭐ ab 3, ⭐⭐⭐ ab 5 |
+| Level | 10 Stufen (0 / 50 / 150 / 300 / 500 / 800 / 1200 / 1700 / 2300 / 3000), gezählt über alle je verdienten Münzen – Einlösen kostet kein Level |
+| Serie | Tage in Folge mit mindestens einem Block · 🛡️ 1 Joker pro Monat rettet einen verpassten Tag |
+| Erfolge | Gewöhnlich 10 · Selten 25 · Episch 50 · Legendär 100 Münzen |
+
+**Erinnerungen fürs eigene Handy:** im Abend-Tab ein persönliches ntfy-Thema eintragen, in der ntfy-App abonnieren, *Test-Nachricht*.
+Diese Erinnerungen gehen nur an sie, nicht an die ganze Familie.
+
 ## Einstellungen per Umgebungsvariable
 
 | Variable | Standard | Bedeutung |
@@ -131,7 +165,7 @@ Wer ntfy selbst hosten möchte: Server-Adresse in den Einstellungen ändern.
 
 ```bash
 npm run dev     # startet auf http://localhost:8080 mit ./data-dev
-npm test        # Parser, iCal, Google (simuliert) und API
+npm test        # Parser, iCal, Google (simuliert), API, Tagesplanung und Spielregeln
 ```
 
 Keine Abhängigkeiten, nur Node.js ≥ 22. Aufbau:
@@ -140,6 +174,7 @@ Keine Abhängigkeiten, nur Node.js ≥ 22. Aufbau:
 server/
   index.js      HTTP-Server, API, Login, Live-Updates (Server-Sent Events)
   calendar.js   Termine lesen/schreiben/synchronisieren, Personen-Zuordnung
+  fluss.js      Tagesfluss: Münzen, Level, Serie, Sticker, Erfolge, Belohnungen, Erinnerungen
   google.js     Google Calendar API über Dienstkonto (JWT, ohne Bibliothek)
   ics.js        iCal-Leser mit Wiederholungen (RRULE, EXDATE, Ausnahmen)
   notify.js     ntfy-Erinnerungen und Morgen-Übersicht
@@ -150,6 +185,8 @@ public/
   index.html    eine Seite für Handy (/) und Wand (/wall)
   app.js        Oberfläche (ohne Build, läuft auch auf älteren Tablets)
   parse.js      versteht „Zahnarzt Mi 15 Uhr“
+  flussplan.js  plant Blöcke um Termine herum, berechnet den Puffer (Browser + Server)
+  fluss.js/.css Tagesfluss-Oberfläche
   sw.js         Offline-Modus
 ```
 
@@ -158,10 +195,12 @@ public/
 - **[Kinboard](https://github.com/svenger87/kinboard):** Personenfarben pro Kalender und Titel-Regeln („Mama: …“), Feiertags- und Müllkalender als eigene Art,
   „Heute“-Leiste auf der Wand, Tagesansicht beim Antippen, *Rückgängig* nach dem Löschen, Kiosk-/Kindersicherung, sofortige Aktualisierung aller Geräte.
   (Nur Ideen, kein Code – Kinboard steht unter einer nicht-kommerziellen Lizenz.)
-- **[momo](https://github.com/jp1337/momo)** (MIT): ntfy-Versand als JSON (damit Umlaute und Emojis ankommen), Morgen-Übersicht, Service Worker mit sofortigem Update.
+- **[momo](https://github.com/jp1337/momo)** (MIT): ntfy-Versand als JSON (damit Umlaute und Emojis ankommen), Morgen-Übersicht, Service Worker mit sofortigem Update –
+  und für den Tagesfluss: Münzen- und Level-System, Serie mit Monats-Joker, Energie-Check-in mit kleinen Erfolgen, doppelte Münzen nach 3× Verschieben,
+  Erfolge in vier Seltenheiten (inkl. geheimer), Wunschliste mit echten Belohnungen und sanfter Tagesabschluss.
 
 ### Noch nicht drin (nächste Schritte)
 
 - Wiederholungen für Termine, die direkt in der Familienwand angelegt werden (Google-Serien funktionieren bereits)
 - Einkaufsliste und Tagesaufgaben zum Abhaken
-- Der ADHS-Tagesbegleiter (siehe `../mockup/tagesfluss.html`) als zweite Ansicht, die diese Termine nutzt
+- Familien-Aufgaben aus der Wand direkt in den Tagesfluss übernehmen

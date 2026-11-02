@@ -10,6 +10,7 @@ import * as google from './google.js';
 import { parseIcs } from './ics.js';
 import { getWeather, geocode } from './weather.js';
 import { sendNtfy, startReminderLoop, stopReminderLoop } from './notify.js';
+import * as fluss from './fluss.js';
 import { isYmd, isValidTz } from './tz.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -171,6 +172,11 @@ async function api(req, res, url) {
 
   if (p === '/api/bootstrap' && m === 'GET') return send(res, 200, bootstrap());
 
+  if (p.startsWith('/api/fluss/')) {
+    const handled = await fluss.handle(req, res, url, { readBody, send });
+    if (handled !== false) return;
+  }
+
   if (p === '/api/stream' && m === 'GET') {
     res.writeHead(200, { 'content-type': 'text/event-stream', 'cache-control': 'no-store', connection: 'keep-alive', 'x-accel-buffering': 'no' });
     res.write('retry: 5000\n\n');
@@ -315,7 +321,10 @@ function shell(mode) {
   if (!shellCache || process.env.NODE_ENV === 'development') shellCache = fs.readFileSync(path.join(PUBLIC, 'index.html'), 'utf8');
   return shellCache
     .replace('{{MODE}}', mode)
-    .replace('{{MANIFEST}}', mode === 'wall' ? '/wall.webmanifest' : '/manifest.webmanifest')
+    .replace('{{MANIFEST}}', mode === 'wall' ? '/wall.webmanifest' : mode === 'fluss' ? '/fluss.webmanifest' : '/manifest.webmanifest')
+    .replace('{{TITLE}}', mode === 'fluss' ? 'Tagesfluss' : 'Familienwand')
+    .replace('{{APPLE_TITLE}}', mode === 'fluss' ? 'Tagesfluss' : mode === 'wall' ? 'Wand' : 'Familie')
+    .replace('{{TOUCH_ICON}}', mode === 'fluss' ? '/icons/fluss-touch-icon.png' : '/icons/apple-touch-icon.png')
     .replaceAll('{{V}}', VERSION);
 }
 
@@ -323,6 +332,7 @@ function serveStatic(req, res, url) {
   let p = decodeURIComponent(url.pathname);
   if (p === '/' || p === '/index.html') return send(res, 200, shell('mobile'), { 'content-type': TYPES['.html'], 'cache-control': 'no-cache' });
   if (p === '/wall' || p === '/wall/') return send(res, 200, shell('wall'), { 'content-type': TYPES['.html'], 'cache-control': 'no-cache' });
+  if (p === '/fluss' || p === '/fluss/') return send(res, 200, shell('fluss'), { 'content-type': TYPES['.html'], 'cache-control': 'no-cache' });
   const file = path.normalize(path.join(PUBLIC, p));
   if (!file.startsWith(PUBLIC + path.sep)) return send(res, 403, 'Verboten');
   fs.stat(file, (err, st) => {

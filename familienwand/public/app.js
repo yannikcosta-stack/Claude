@@ -4,7 +4,8 @@
 (function () {
   'use strict';
 
-  var MODE = document.documentElement.getAttribute('data-mode') === 'wall' ? 'wall' : 'mobile';
+  var MODE = document.documentElement.getAttribute('data-mode');
+  if (MODE !== 'wall' && MODE !== 'fluss') MODE = 'mobile';
   var S = { boot: null, events: [], weather: null, filter: 'all', offline: false, loading: false, nightWake: 0 };
   var FAMILY_COLOR = '#169C68';
   var PALETTE = ['#D3367A', '#2F86D8', '#E9A70E', '#169C68', '#E5763A', '#7B5BD6', '#0F9AA8', '#5B6B82'];
@@ -103,6 +104,7 @@
 
   function range() {
     var t = today();
+    if (MODE === 'fluss') return { from: addDays(t, -1), to: addDays(t, 2) };
     return MODE === 'wall' ? { from: addDays(t, -1), to: addDays(t, 15) } : { from: addDays(t, -1), to: addDays(t, 75) };
   }
 
@@ -129,6 +131,7 @@
     es.addEventListener('change', function (e) {
       var r = '';
       try { r = JSON.parse(e.data).reason; } catch (x) { /* egal */ }
+      if (r === 'fluss') { if (MODE === 'fluss' && window.FWFluss) window.FWFluss.reload(); return; }
       scheduleReload(r === 'people' || r === 'calendars' || r === 'settings');
       if (r === 'settings') loadWeather();
     });
@@ -186,7 +189,7 @@
     var t = today(), b = S.boot, r = range();
     var h = '<div class="m">';
     h += '<header class="m-top"><div><div class="m-fam">' + esc(b.settings.familyName || 'Familie') + '</div><div class="m-date">' + dateLong(new Date()) + '</div></div>' +
-      '<div class="m-actions"><button class="iconbtn" id="sync" aria-label="Jetzt synchronisieren">' + icon('sync') + '</button><button class="iconbtn" id="openSet" aria-label="Einstellungen">' + icon('gear') + '</button></div></header>';
+      '<div class="m-actions"><a class="iconbtn fl-link" href="/fluss" aria-label="Mein Tagesfluss">✨</a><button class="iconbtn" id="sync" aria-label="Jetzt synchronisieren">' + icon('sync') + '</button><button class="iconbtn" id="openSet" aria-label="Einstellungen">' + icon('gear') + '</button></div></header>';
     if (S.offline) h += '<div class="offline">Offline – du siehst den letzten Stand.</div>';
 
     // Tablet erkannt? (einmalig fragen)
@@ -869,11 +872,13 @@
     if ($('.overlay.show') && MODE === 'mobile') {
       // Liste im Hintergrund trotzdem aktualisieren
     }
+    if (MODE === 'fluss') { if (window.FWFluss) window.FWFluss.render(); return; }
     if (MODE === 'wall') renderWall(); else renderMobile();
   }
 
   function init() {
     if (MODE === 'mobile' && store('fw.device') === 'wall') { location.replace('/wall'); return; }
+    if (MODE === 'fluss' && window.FWFluss) window.FWFluss.init();
     loadAll().then(function () {
       connectLive();
       loadWeather();
@@ -903,6 +908,15 @@
       document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && S.boot) loadEvents().catch(function () { render(); }); });
     }
   }
+
+  // Gemeinsame Bausteine für den Tagesfluss (fluss.js)
+  window.FW = {
+    api: api, toast: toast, openSheet: openSheet, sheetHead: sheetHead, esc: esc, icon: icon, store: store, vibrate: vibrate,
+    hexRgba: hexRgba, tint: tint, ymd: ymd, parseYmd: parseYmd, addDays: addDays, today: today, hm: hm, dateLong: dateLong,
+    WD_SHORT: WD_SHORT, WD_LONG: WD_LONG, MON_LONG: MON_LONG,
+    state: function () { return S; }, person: person, evKind: evKind, evStart: evStart, evEnd: evEnd, eventsOn: eventsOn,
+    openEditor: function (d) { openEditor(null, d || null); }, openSettings: function (f) { openSettings(f); }, reloadEvents: function () { return loadEvents(); },
+  };
 
   if ('serviceWorker' in navigator && window.isSecureContext) {
     window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function () { /* egal */ }); });

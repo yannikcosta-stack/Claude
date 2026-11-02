@@ -4,6 +4,7 @@
 import { getDb, save } from './store.js';
 import { listEvents, tz } from './calendar.js';
 import { ymdInTz, addDaysYmd, localParts } from './tz.js';
+import { reminders as flussReminders, pruneOldDays } from './fluss.js';
 
 export async function sendNtfy({ server, topic, title, message, tags, click, priority = 3 }) {
   if (!topic) throw new Error('Kein ntfy-Thema eingestellt.');
@@ -35,6 +36,13 @@ function who(ev, people) {
 
 export async function tick(now = new Date()) {
   const db = getDb();
+  // Tagesfluss-Erinnerungen gehen an das persönliche Thema der Person (unabhängig vom Familien-Schalter)
+  const server = (db.settings.ntfy && db.settings.ntfy.server) || 'https://ntfy.sh';
+  const flussClick = db.settings.appUrl ? db.settings.appUrl.replace(/\/+$/, '') + '/fluss' : undefined;
+  for (const r of flussReminders(now)) {
+    sendNtfy({ server, topic: r.topic, title: r.title, message: r.message, tags: r.tags, click: flussClick, priority: 4 }).catch((e) => console.error('[ntfy]', e.message));
+  }
+  if (localParts(now, tz()).h === 3 && localParts(now, tz()).mi === 0) pruneOldDays();
   const cfg = db.settings.ntfy;
   if (!cfg || !cfg.enabled || !cfg.topic) return;
   db.reminderSent ||= {};

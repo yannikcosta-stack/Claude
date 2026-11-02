@@ -1,7 +1,7 @@
 /* Service Worker: App-Hülle offline verfügbar, letzte Termine als Rückfall.
    (skipWaiting/clients.claim wie bei momo: neue Versionen greifen sofort.) */
-var VERSION = 'fw-v1';
-var SHELL = ['/', '/wall', '/app.css', '/app.js', '/parse.js', '/fonts/lexend-latin.woff2', '/fonts/baloo2-latin.woff2', '/icons/icon.svg', '/icons/icon-192.png'];
+var VERSION = 'fw-v2';
+var SHELL = ['/', '/wall', '/fluss', '/app.css', '/app.js', '/parse.js', '/fluss.css', '/fluss.js', '/flussplan.js', '/fonts/lexend-latin.woff2', '/fonts/baloo2-latin.woff2', '/icons/icon.svg', '/icons/icon-192.png'];
 
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(VERSION).then(function (c) { return c.addAll(SHELL); }).then(function () { return self.skipWaiting(); }));
