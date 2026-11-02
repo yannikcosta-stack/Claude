@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="de" data-mode="{{MODE}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Familienwand</title>
+<meta name="description" content="Euer gemeinsamer Familienkalender">
+<meta name="theme-color" content="#F6F1FB" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#150F1F" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="{{MANIFEST}}">
+<link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+<link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Familie">
+<link rel="preload" href="/fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/app.css?v={{V}}">
+</head>
+<body>
+<div id="app"><div class="boot"><div class="boot-logo"></div>Familienwand lädt …</div></div>
+<div id="sheets"></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="/parse.js?v={{V}}"></script>
+<script src="/app.js?v={{V}}"></script>
+</body>
+</html>

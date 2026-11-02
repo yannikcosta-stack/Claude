@@ -1,0 +1,14 @@
+{
+  "name": "familienwand",
+  "version": "0.1.0",
+  "description": "Selbst gehosteter Familienkalender mit Google-Kalender-Anbindung, Handy-App (PWA) und Family-Wall-Ansicht für Tablets.",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "NODE_ENV=development DATA_DIR=./data-dev node --watch server/index.js",
+    "test": "node --test test/*.test.js"
+  }
+}

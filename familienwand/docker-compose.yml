@@ -1,0 +1,14 @@
+services:
+  familienwand:
+    build: .
+    image: familienwand:latest
+    container_name: familienwand
+    restart: unless-stopped
+    ports:
+      - "8080:8080"           # links den Port auf dem NAS ändern, falls 8080 belegt ist
+    environment:
+      TZ: Europe/Berlin
+      APP_PASSWORD: "bitte-aendern"   # Familien-Passwort (leer lassen = kein Passwort, nur im Heimnetz!)
+      SYNC_MINUTES: "3"               # wie oft Google/iCal abgeglichen wird
+    volumes:
+      - ./data:/data          # hier liegen Termine, Einstellungen und der Google-Schlüssel
